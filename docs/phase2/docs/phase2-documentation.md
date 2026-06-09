@@ -39,6 +39,8 @@ The subnet was associated with a route table containing a route to an Internet G
 
 The VPC and public subnet were successfully configured and provided network connectivity for the EC2 instance.
 
+![Example 1](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/VPC.png?raw=true)
+
 ---
 
 # Task 2 – Creating a Virtual Machine
@@ -105,6 +107,9 @@ The application was started using:
 node index.js
 ```
 
+![Example 2](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/EC2_1.png?raw=true)
+![Example 3](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/EC2_2.png?raw=true)
+
 ---
 
 # Database Configuration
@@ -169,6 +174,8 @@ The application configuration was updated to use the local database.
 
 The application successfully established a connection to MySQL.
 
+![Example 4](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/MySQL_1.png?raw=true)
+
 ---
 
 # Task 3 – Testing the Deployment
@@ -177,7 +184,7 @@ The application successfully established a connection to MySQL.
 
 Verify that the application is accessible from the Internet and fully functional.
 
-### Application URL
+### Application URL at the Time of Testing
 
 ```text
 http://54.175.185.197:3000
@@ -195,56 +202,6 @@ The following operations were successfully tested:
 ### Result
 
 The web application successfully communicated with the MySQL database and all CRUD operations worked correctly.
-
----
-
-# Architecture Diagram
-
-The architecture diagram for Phase 2 is available in:
-
-```text
-docs/architecture_phase2.png
-```
-
-The architecture consists of:
-
-```text
-Users
-   |
-Internet
-   |
-EC2 Instance (Ubuntu 26.04)
-   |
-   |-- Node.js Web Application
-   |
-   |-- MySQL Database
-```
-
-Both the application layer and database layer were hosted on the same EC2 instance.
-
----
-
-# Screenshots / Proof
-
-The following screenshots were captured as evidence of successful deployment:
-
-* VPC Configuration
-* Public Subnet
-* Route Table
-* Security Group
-* EC2 Instance Running
-* SSH Connection
-* Application Home Page
-* Student Records List
-* Add Student Operation
-* Update Student Operation
-* Delete Student Operation
-
-Screenshots are available in:
-
-```text
-docs/screenshots-phase2/
-```
 
 The following output proves the functionality of basic CRUD operations on the website.
 Output was given by the Amazon console:
@@ -320,6 +277,11 @@ Successfully connected to the database.
 Students:  []
 ```
 
+![Example 5](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/website.png?raw=true)
+![Example 6](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/website_2.png?raw=true)
+![Example 7](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/website_3.png?raw=true)
+![Example 8](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/website_4.png?raw=true)
+![Example 9](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/website_5.png?raw=true)
 
 ---
 
@@ -328,3 +290,5 @@ Students:  []
 Phase 2 was successfully completed. A fully functional student management application was deployed on AWS using a custom VPC and an EC2 instance. The Node.js application and MySQL database were configured and tested successfully. The application was publicly accessible through the EC2 public IP address and supported all required CRUD operations.
 
 This deployment serves as the foundation for Phase 3, where the database layer will be separated from the application layer using Amazon RDS and AWS Secrets Manager.
+
+![Example 10](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase2/images/architecture-phase2.png?raw=true)
