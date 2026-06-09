@@ -38,6 +38,9 @@ The existing VPC from Phase 2 was reused and extended with private subnets to su
 
 The VPC was successfully updated to support a separate database layer hosted inside private subnets.
 
+![Example 1](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/VPC.png?raw=true)
+![Example 9](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Subnets.png?raw=true)
+
 ---
 
 # Task 2 – Creating and Configuring Amazon RDS
@@ -68,6 +71,10 @@ Inbound access was allowed from:
 
 Amazon RDS was successfully deployed and configured inside the project VPC.
 
+![Example 2](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/RDS.png?raw=true)
+
+![Example 3](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/RDS_2.png?raw=true)
+
 ---
 
 # Task 3 – Configuring the Development Environment
@@ -87,6 +94,8 @@ Provision an AWS Cloud9 environment for administration and migration tasks.
 ### Result
 
 The Cloud9 environment was successfully deployed and used to perform AWS CLI operations and database migration tasks.
+
+![Example 4](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Cloud9.png?raw=true)
 
 ---
 
@@ -112,6 +121,8 @@ The application retrieves these values dynamically during runtime.
 ### Result
 
 Database credentials were successfully stored in AWS Secrets Manager and integrated with the web application.
+
+![Example 5](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Secret_Manager.png?raw=true)
 
 ---
 
@@ -156,7 +167,7 @@ The provided application deployment script was used during instance creation.
 
 The application was automatically installed and started using EC2 User Data.
 
-### Application URL
+### Application URL at the Time of Testing
 
 ```text
 http://54.204.231.197
@@ -165,6 +176,8 @@ http://54.204.231.197
 ### Result
 
 The application was successfully deployed on a dedicated EC2 instance and was accessible through the public internet.
+
+![Example 6](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Website_1.png?raw=true)
 
 ---
 
@@ -203,6 +216,7 @@ Table: students
 
 The STUDENTS database was successfully migrated from the Phase 2 EC2 instance to Amazon RDS.
 
+![Example 8](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Databases.png?raw=true)
 ---
 
 # Task 7 – Testing the Application
@@ -224,29 +238,11 @@ A test student record was successfully inserted through the application interfac
 ### Result
 
 The web application successfully communicated with Amazon RDS and all required functionality operated correctly.
+(notice the change in "City")
 
----
+![Example 10](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Website_1.png?raw=true)
 
-# Screenshots
-
-The following screenshots were captured as evidence of successful deployment:
-
-* Private Subnets
-* Amazon RDS Instance
-* RDS Connectivity Configuration
-* Cloud9 Environment
-* Secrets Manager Secret
-* Phase 3 EC2 Instance Running
-* Application Home Page
-* Database Migration
-* Student Records List
-* Add Student Operation
-
-Screenshots are available in:
-
-```text
-docs/phase3/images
-```
+![Example 11](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/Website_2.png?raw=true)
 
 ---
 
@@ -255,3 +251,5 @@ docs/phase3/images
 Phase 3 was successfully completed. The database layer was migrated from a local MySQL installation on an EC2 instance to Amazon RDS. AWS Secrets Manager was used to securely manage database credentials, and the application was deployed on a dedicated EC2 instance.
 
 The final architecture separates the application and database layers, improving scalability, security, and maintainability while maintaining full application functionality.
+
+![Example 12](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase3/images/architecture-phase3.png?raw=true)

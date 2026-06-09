@@ -1,149 +1,213 @@
-## Phase 1: Planning the Design and Estimating the Cost
+# Phase 1 Documentation – Architecture Planning and Cost Estimation
 
-This section explains all configuration steps and structural choices made during Phase 1 so that the setup can be fully understood and reproduced.
+## Overview
 
-### Task 1: Architectural Diagram & Network Topology Design
+The objective of Phase 1 was to design a cloud architecture capable of hosting the Student Records web application while satisfying the project requirements.
 
-To prevent any single point of failure (SPOF) and guarantee high availability, the infrastructure is conceptually mapped across two distinct Availability Zones (`us-east-1a` and `us-east-1b`) within the `us-east-1` (N. Virginia) region.
+The architecture was planned according to AWS Well-Architected Framework principles with emphasis on:
 
-#### 1. Network Subnet Segmentation and CIDR Allocations
+* High availability
+* Scalability
+* Security
+* Cost optimization
+* Load balancing
+* Performance
 
-The Virtual Private Cloud (VPC) uses a master address block of `10.0.0.0/16`. This layout is split into four separate, non-overlapping subnets to isolate public-facing entry points from secure internal backend tiers:
+Before deploying infrastructure, an architecture design was created and a cost estimate was developed using AWS Pricing Calculator.
 
-| Resource | CIDR Block | Purpose |
-|----------|------------|---------|
-| VPC Master Range | `10.0.0.0/16` | Main network boundary |
-| Public Subnet A (us-east-1a) | `10.0.1.0/24` | External-facing components (ALB) |
-| Public Subnet B (us-east-1b) | `10.0.2.0/24` | Multi-AZ public redundancy |
-| Private Subnet A (us-east-1a) | `10.0.3.0/24` | Compute (EC2) + Database (RDS) |
-| Private Subnet B (us-east-1b) | `10.0.4.0/24` | Compute (EC2) for horizontal scaling |
-
-#### 2. Infrastructure Flow and Component Purposes
-
-| Component | Placement | Purpose |
-|-----------|-----------|---------|
-| **Internet Gateway (IGW)** | VPC boundary | Enables public internet routing for components inside public subnets |
-| **Application Load Balancer (ALB)** | Public subnets | Single point of contact; distributes incoming traffic to compute instances |
-| **Auto Scaling Group (ASG)** | Both private subnets | Maintains baseline of 2 instances; ensures service availability across zones |
-| **Amazon RDS for MySQL** | Private Subnet A | No direct internet path; only accessible internally by application tier |
-| **AWS Secrets Manager** | Regional service | Stores database credentials securely; prevents hardcoding in application code |
-
-> **Visual Reference:** The architectural diagram is available at `docs/architecture_phase1.png`
+The planned environment is intended to support thousands of users while remaining reliable and operational during peak admissions periods.
 
 ---
 
-### Task 2: 12-Month Financial Cost Optimization Analysis
+# Task 1 – Creating an Architectural Diagram
 
-To achieve maximum cost efficiency, resource types were selected using a minimalist approach suitable for a Proof-of-Concept environment, keeping costs low while maintaining architecture standards. The cost estimate covers a 12-month lifecycle in the **US East (N. Virginia)** region.
+## Objective
 
-#### Detailed Financial Breakdown by Service
+Design an AWS architecture capable of hosting the Student Records application while satisfying all functional and non-functional requirements.
 
-##### 1. Amazon EC2 (Web App Compute Layer)
+## Implementation
 
-| Parameter | Value |
-|-----------|-------|
-| Configuration | 2 x t3.micro (2 vCPUs, 1 GiB RAM each) |
-| Operating System | Linux / Ubuntu |
-| Workload Type | Constant usage, 24/7 (730 hours/month per instance) |
-| Storage | 10 GB gp3 per instance (3,000 IOPS, 125 MBps) |
-| Backup | No snapshot storage |
-| **Monthly Cost** | **$16.78** |
+### Architecture Components
 
-##### 2. Amazon RDS for MySQL (Data Layer)
+| Component                 | Purpose                                         |
+| ------------------------- | ----------------------------------------------- |
+| VPC                       | Isolated virtual network for hosting resources  |
+| Public Subnets            | Host internet-facing components                 |
+| Private Subnets           | Host internal application and database services |
+| Application Load Balancer | Distributes incoming traffic                    |
+| Auto Scaling Group        | Automatically scales application servers        |
+| Amazon EC2                | Hosts theapplication                            |
+| Amazon RDS (MySQL)        | Stores student records                          |
+| AWS Secrets Manager       | Stores database credentials                     |
 
-| Parameter | Value |
-|-----------|-------|
-| Configuration | 1 x db.t3.micro (1 vCPU, 1 GiB RAM) |
-| Deployment | Single-AZ (cost optimization) |
-| Storage | 20 GB gp3 |
-| **Monthly Cost** | **$54.86** |
+### Network Layout
 
-##### 3. Elastic Load Balancing (Network Traffic Routing)
+| Resource         | CIDR        |
+| ---------------- | ----------- |
+| VPC              | 10.0.0.0/16 |
+| Public Subnet A  | 10.0.1.0/24 |
+| Public Subnet B  | 10.0.2.0/24 |
+| Private Subnet A | 10.0.3.0/24 |
+| Private Subnet B | 10.0.4.0/24 |
 
-| Parameter | Value |
-|-----------|-------|
-| Configuration | 1 x Application Load Balancer (ALB) |
-| Traffic Profile | Minimal baseline (0-1 GB monthly) |
-| **Monthly Cost** | **$16.46** |
+### Security Design
 
-##### 4. AWS Secrets Manager (Security & Compliance)
+| Resource                  | Access                     |
+| ------------------------- | -------------------------- |
+| Application Load Balancer | HTTP (80) from Internet    |
+| EC2 Instances             | HTTP (80) from ALB         |
+| Amazon RDS                | MySQL (3306) from EC2 only |
 
-| Parameter | Value |
-|-----------|-------|
-| Configuration | 1 active secret |
-| Secret Duration | 30-day rotation |
-| API Calls | 1,000 per month (baseline) |
-| **Monthly Cost** | **$0.41** |
+### Result
 
-#### Financial Summary Metrics
+The proposed architecture provides:
 
-| Metric | Amount |
-|--------|--------|
-| Upfront Costs | $0.00 |
-| **Total Monthly Cost** | **$88.51** |
-| **Total 12-Month Cost** | **$1,062.12** |
-
-> **Reference:** Official cost estimate export is available at `docs/cost-estimate.pdf`
+* Separation of application and database layers
+* Support for horizontal scaling
+* High availability across Availability Zones
+* Controlled database access
+* Load balancing for traffic distribution
 
 ---
 
-## Deployment & Reproduction Guide (Phase 1 Validation)
+# Task 2 – Developing a Cost Estimate
 
-To reproduce the exact environment planning and validation artifacts established in Phase 1, follow these steps:
+## Objective
 
-### Step 1: Replicate the Network Design
+Estimate the cost of running the proposed solution in the us-east-1 Region for 12 months.
 
-1. Open your diagramming tool (e.g., Lucidchart or Draw.io)
-2. Create a master container representing the AWS Region (`us-east-1`)
-3. Inside it, draw a VPC boundary labeled with CIDR block `10.0.0.0/16`
-4. Divide the VPC into two vertical halves representing:
-   - Availability Zone `us-east-1a`
-   - Availability Zone `us-east-1b`
-5. In each zone, create:
-   - One Public Subnet (`10.0.1.0/24` and `10.0.2.0/24`)
-   - One Private Subnet (`10.0.3.0/24` and `10.0.4.0/24`)
-6. Place an **Internet Gateway** at the edge of the VPC
-7. Place the **Application Load Balancer** across the public subnets
-8. Set up an **Auto Scaling Group** spanning both private subnets with 2 EC2 instances
-9. Add an **RDS MySQL database** into Private Subnet A
-10. Map **AWS Secrets Manager** as an external regional service pointing to the ASG compute instances
-11. Export the diagram as a PNG image and save to `docs/architecture_phase1.png`
+## Implementation
 
-### Step 2: Replicate the Cost Estimation
+AWS Pricing Calculator was used to estimate infrastructure expenses.
 
-1. Navigate to the [AWS Pricing Calculator](https://calculator.aws)
-2. Click **Create estimate** and set region to **US East (N. Virginia)**
-3. **Add Amazon EC2:**
-   - Quantity: 2
-   - Usage: Constant (100% utilization)
-   - Instance type: t3.micro
-   - Storage: 10 GB gp3 (baseline IOPS 3000, throughput 125 MBps)
-   - Snapshots: Disabled
-4. **Add Amazon RDS for MySQL:**
-   - Deployment: Single-AZ
-   - Instance type: db.t3.micro
-   - Storage: 20 GB gp3
-5. **Add Elastic Load Balancing:**
-   - Type: Application Load Balancer
-   - Quantity: 1
-   - LCU: 0 (baseline)
-6. **Add AWS Secrets Manager:**
-   - Number of secrets: 1
-   - Duration: 30 days
-   - API calls: 1,000 per month
-7. Click **View Summary**, then **Export** → **PDF**
-8. Save to `docs/cost-estimate.pdf`
+The estimate was prepared using the planned production architecture.
 
-## Next Steps
+Services included in the estimate:
 
-- **Phase 2:** Creating a basic functional web application (single EC2 instance deployment)
-- **Phase 3:** Decoupling application components (RDS + Secrets Manager integration)
-- **Phase 4:** Implementing high availability and scalability (ALB + ASG + load testing)
+* Amazon EC2
+* Amazon RDS for MySQL
+* Elastic Load Balancing
+* AWS Secrets Manager
+
+### Estimated Infrastructure Cost
+
+| Metric                 |      Cost |
+| ---------------------- | --------: |
+| Upfront Cost           |     $0.00 |
+| Monthly Cost           |    $88.51 |
+| Total Cost (12 Months) | $1,062.12 |
+
+### Service Breakdown
+
+| Service                | Monthly Cost |
+| ---------------------- | -----------: |
+| Amazon EC2             |       $16.78 |
+| Amazon RDS for MySQL   |       $54.86 |
+| Elastic Load Balancing |       $16.46 |
+| AWS Secrets Manager    |        $0.41 |
+
+### Estimated Resource Configuration
+
+#### Amazon EC2
+
+| Setting             | Value     |
+| ------------------- | --------- |
+| Instance Type       | t3.micro  |
+| Number of Instances | 2         |
+| OS                  | Linux     |
+| Pricing             | On-Demand |
+| EBS Storage         | 10 GB     |
+
+#### Amazon RDS
+
+| Setting       | Value       |
+| ------------- | ----------- |
+| Engine        | MySQL       |
+| Instance Type | db.t3.micro |
+| Storage       | 20 GB gp3   |
+| Deployment    | Single-AZ   |
+
+#### Elastic Load Balancer
+
+| Setting  | Value                     |
+| -------- | ------------------------- |
+| Type     | Application Load Balancer |
+| Quantity | 1                         |
+
+#### AWS Secrets Manager
+
+| Setting           | Value      |
+| ----------------- | ---------- |
+| Number of Secrets | 1          |
+| API Calls         | 1000/month |
+
+### Cost Analysis
+
+Amazon RDS represents the largest portion of infrastructure expenses due to managed database hosting.
+
+Compute costs remain low because small EC2 instances were selected for the proof-of-concept deployment.
+
+Secrets Manager contributes minimal additional cost while improving credential security.
+
+### Result
+
+The estimated annual infrastructure cost remained within acceptable limits for a proof-of-concept environment while still providing scalability and availability capabilities.
+
+You can find the full PDF document under the `docs/phase1/docs`
 
 ---
 
-## References
+# Planned Architecture Components
 
-- [AWS Architecture Icons](https://aws.amazon.com/architecture/icons/)
-- [AWS Pricing Calculator](https://calculator.aws/)
-- [AWS Well-Architected Framework](https://aws.amazon.com/architecture/well-architected/)
+## Application Load Balancer
+
+Receives incoming user traffic and distributes requests across application servers.
+
+## Auto Scaling Group
+
+Provides scalability by automatically adjusting the number of EC2 instances.
+
+## Amazon EC2
+
+Runs the Student Records web application.
+
+## Amazon RDS
+
+Stores student data and application records.
+
+## AWS Secrets Manager
+
+Stores sensitive configuration values and database credentials.
+
+---
+
+# Final Planned Architecture
+
+The planned infrastructure contains:
+
+* One VPC (10.0.0.0/16)
+* Two public subnets
+* Two private subnets
+* Application Load Balancer
+* Auto Scaling Group
+* Multiple EC2 instances
+* Amazon RDS MySQL
+* AWS Secrets Manager
+
+Users access the application through the Application Load Balancer, which distributes traffic across EC2 instances.
+
+Application servers retrieve credentials securely and communicate with Amazon RDS for data storage.
+
+![Example 1](https://github.com/przuljp/devops-project-2026-group-2/blob/development/docs/phase1/images/architecture-phase1.png?raw=true)
+
+---
+
+# Conclusion
+
+Phase 1 established the foundation for the remaining implementation phases.
+
+The architecture was designed to meet availability, security, performance, and scalability requirements while remaining cost conscious.
+
+The cost estimate demonstrated that the planned infrastructure could be operated for approximately $1,062 annually in the selected AWS Region.
+
+This planning phase provided the blueprint for deployment and implementation in later phases.
